@@ -33,7 +33,7 @@ T = size(x, 2); % The number of samples per channel
 t = (0 : T - 1)/fs;
 
 % Plot the channels
-PlotECG(x, 4, 'b', fs, 'Raw data channels');
+%PlotECG(x, 4, 'b', fs, 'Raw data channels');
 
 % Run JADE
 lastEigJADE = N; % PCA stage
@@ -58,6 +58,7 @@ eog_envelope = sqrt(filtfilt(ones(1, energy_envelope_len), energy_envelope_len, 
 med = median(eog_envelope);
 mx = max(eog_envelope);
 eog_detection_threshold = 0.95 * med + 0.05 * mx;
+%eog_detection_threshold = 0.90 * med + 0.1 * mx;
 
 J = eog_envelope >= eog_detection_threshold;
 I = 1 : T;
@@ -70,25 +71,45 @@ s_nsca_denoised(eog_channel, :) = 0;
 x_denoised_nsca = A_nsca * s_nsca_denoised;
 % PlotECG(s_nsca, 4, 'r', fs, 'Sources extracted by NSCA');
 
-figure
-hold on
-plot(t, eog_ref);
-plot(t, eog_envelope);
-plot(t, eog_detection_threshold(ones(1, T)));
-grid
-legend('EOG reference channel', 'EOG envelope');
+%figure
+%hold on
+%plot(t, eog_ref);
+%plot(t, eog_envelope);
+%plot(t, eog_detection_threshold(ones(1, T)));
+%grid
+%legend('EOG reference channel', 'EOG envelope');
 
 % Plot the denoised signals
-for ch = 1 : N
+for ch = 1 : 3
     figure
     hold on
     plot(t, x(ch, :));
     plot(t, x_denoised_jade(ch, :));
     plot(t, x_denoised_nsca(ch, :));
     legend(['channel ' num2str(ch)], 'denoised by JADE', 'denoised by NSCA');
+    disp('Signal change')
+    disp(std(x(ch,:)))
+    disp( std(x_denoised_jade(ch, :)));
+    disp(std( x_denoised_nsca(ch, :)));
     grid
 end
 
+
 % Run the following script from the OSET package for a more advanced method
-testEOGRemoval
+%testEOGRemoval
+
+
+%noise removal utilizing NCSA seems to be more aggresive than using jade 
+%this is reflected in the summary statistics where the standard devieaiton
+%of the signal is smallest with nsca. At a high level observation the
+%signals appear to be rather similar. On closer inspection we can see
+%differences in denoising ocmparing signals from channel 1 and channel 3 
+%in the region with a rapid change seen in the 31 second mark we see that
+%jade trails behind the NSCA method. Suggesting that jade is more sensitive
+%to rapid changes in signals. Meanwhile for regions with a consistent
+%signal( i.e flat)  both methods are in agreement 
+
+
+
+
 

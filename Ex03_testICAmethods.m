@@ -16,6 +16,7 @@ clc
 clear
 close all
 
+rng(123) %added rng number
 example = 3;
 switch example
     case 1 % A sample EEG from the OSET package
@@ -51,7 +52,7 @@ PlotECG(x, 4, 'b', fs, 'Raw data channels');
 
 % Run fastica
 approach = 'symm'; % 'symm' or 'defl'
-g = 'tanh'; % 'pow3', 'tanh', 'gauss', 'skew'
+g = 'skew'; % 'pow3', 'tanh', 'gauss', 'skew'
 lastEigfastica = N; % PCA stage
 numOfIC = N; % ICA stage
 interactivePCA = 'off';
@@ -78,3 +79,10 @@ PlotECG(s_jade, 4, 'k', fs, 'Sources extracted by JADE');
 
 % Plot the sources
 PlotECG(s_sobi, 4, 'm', fs, 'Sources extracted by SOBI');
+
+%for this section we compared the changes  caused by different
+%appriximation approaches. We observed tanh,pow3, and skew to view a small
+%subset of variability. We notice that  tanh and po3 have the greatest
+%agreeement. Meanwhile skew produces  slightly different results 
+
+
